@@ -8,9 +8,9 @@ class ChargeProgressView extends StatelessWidget {
     final ChargeControl c = Get.find();
     return Column(
       children: [
-        Obx(() => Text("Delivered Energy (Wh): " + c.deliveredWh.toString())),
-        Obx(() => Text("Duration (mins): " + c.deliveredMin.toString())),
-        Obx(() => Text("Estimate (Rs): " + c.totalAmountToPay.toString())),
+        Obx(() => Text('Delivered Energy (Wh): ' + c.deliveredWh.toString())),
+        Obx(() => Text('Duration (mins): ' + c.deliveredMin.toString())),
+        Obx(() => Text('Estimate (Rs): ' + c.totalAmountToPay.toString())),
         Obx(() => Text(c.userHint.toString())),
       ],
     );

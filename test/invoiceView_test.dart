@@ -8,7 +8,7 @@ import 'package:get/get.dart';
 void main() {
   testWidgets('Counter increments smoke test', (WidgetTester tester) async {
     final control = ChargeControl();
-    control.status.value = "Unknown";
+    control.status.value = 'Unknown';
     Get.put(control);
 
     await tester.pumpWidget(MaterialApp(home: InvoiceView()));

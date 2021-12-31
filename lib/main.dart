@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:getx_bindings_mvc/chargeControl.dart';
-import 'package:getx_bindings_mvc/chargingView.dart';
+import 'package:getx_bindings_mvc/chargingScreen.dart';
 
 void main() => runApp(GetMaterialApp(home: Home()));
 
@@ -13,7 +13,7 @@ class Home extends StatelessWidget {
 
     return Scaffold(
       // Use Obx(()=> to update Text() whenever count is changed.
-      appBar: AppBar(title: Obx(() => Text("Status: ${c.status}"))),
+      appBar: AppBar(title: Obx(() => Text('Status: ${c.status}'))),
       body: ChargingView(),
     );
   }

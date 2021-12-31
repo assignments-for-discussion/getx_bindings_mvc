@@ -9,6 +9,6 @@ class InvoiceView extends StatelessWidget {
   @override
   Widget build(context) {
     // Access the updated count variable
-    return Scaffold(body: Center(child: Text("${c.status}")));
+    return Scaffold(body: Center(child: Text('${c.status}')));
   }
 }

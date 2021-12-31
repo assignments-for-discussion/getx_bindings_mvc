@@ -37,6 +37,10 @@ dependencies:
   cupertino_icons: ^1.0.2
 
 dev_dependencies:
+  analyzer:
+  dart_code_metrics:
+  pedantic:
+  test_cov_console:
   flutter_test:
     sdk: flutter
 
