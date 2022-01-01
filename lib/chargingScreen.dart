@@ -4,7 +4,7 @@ import 'package:getx_bindings_mvc/chargeControl.dart';
 import 'package:getx_bindings_mvc/chargeProgressView.dart';
 import 'package:getx_bindings_mvc/invoiceView.dart';
 
-class ChargingView extends StatelessWidget {
+class ChargingScreen extends StatelessWidget {
   @override
   Widget build(context) {
     final ChargeControl c = Get.find();

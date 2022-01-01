@@ -41,12 +41,12 @@ class ChargingViewSamples extends StatelessWidget {
 
   void waitingToStart() {
     setupController(0, 0, 'Waiting to start');
-    Get.to(() => Scaffold(body: ChargingView()));
+    Get.to(() => Scaffold(body: ChargingScreen()));
   }
 
   void startedCharging() {
     setupController(33, 888, 'Charging');
-    Get.to(() => Scaffold(body: ChargingView()));
+    Get.to(() => Scaffold(body: ChargingScreen()));
   }
 
   void longErrorMessage() {
@@ -55,6 +55,6 @@ class ChargingViewSamples extends StatelessWidget {
       0,
       "Error while fetching progress: Looks like you don't have an internet connection. Please check if your phone is in airplane mode.",
     );
-    Get.to(() => Scaffold(body: ChargingView()));
+    Get.to(() => Scaffold(body: ChargingScreen()));
   }
 }
