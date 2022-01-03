@@ -13,6 +13,10 @@ class Intent {
     status.value = IntentStatus.done;
   }
 
+  void reset() {
+    status.value = IntentStatus.none;
+  }
+
   bool get isPending {
     return status.value == IntentStatus.pending;
   }
@@ -24,6 +28,14 @@ class Intent {
   void onFire(void Function(IntentStatus) listener) {
     status.listen((s) {
       if (isPending) {
+        listener(s);
+      }
+    });
+  }
+
+  void onDone(void Function(IntentStatus) listener) {
+    status.listen((s) {
+      if (isDone) {
         listener(s);
       }
     });

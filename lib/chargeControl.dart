@@ -2,85 +2,92 @@ import 'package:get/get.dart';
 import 'package:dio/dio.dart';
 import 'intent.dart';
 
-dynamic post(String url, Map<String, dynamic> body) async {
-  try {
-    var response = await Dio().post(url, data: body);
-    return response.data;
-  } catch (e) {
-    print('Dio POST error: $e');
-    return e;
-  }
-}
-
-const deviceUrl = 'http://10.0.2.2:9090/device';
-const progressUrl = 'http://10.0.2.2:7902/api/transaction';
-
-class ChargeControl extends GetxController {
+// TODO: split this to have the intents in SessionIntents
+class ChargerSession extends GetxController {
   var status = 'Available'.obs;
-  var lastSessionId = ''.obs;
+  var sessionId = ''.obs;
   var deliveredMin = 0.obs;
   var deliveredWh = 0.obs;
   var totalAmountToPay = 0.obs;
   var target = '/numotry/7RUFAT/cpsud001'.obs;
   var chargeStartIntent = Intent();
-  var chargeStopPending = false.obs;
+  var chargeStopIntent = Intent();
   var userHint = ''.obs;
+}
 
-  ChargeControl() {
-    chargeStartIntent.onFire((p0) async {
+// TODO: Move these to a separate file along with the Controllers below
+const deviceUrl = 'http://10.0.2.2:9090/device';
+const progressUrl = 'http://10.0.2.2:7902/api/transaction';
+
+class ChargeStarter extends GetxController {
+  ChargerSession session = Get.find();
+  Dio dio;
+  ChargeStarter(this.dio) {
+    session.chargeStartIntent.onFire((p0) async {
       await startCharging();
-      chargeStartIntent.done();
+      session.chargeStartIntent.done();
     });
-    chargeStopPending.listen((p0) async {
-      if (chargeStopPending.isTrue) {
-        await stopCharging();
-        chargeStopPending.value = false;
-      }
-    });
-    userHint.value = 'Waiting to start...';
   }
-
   Future<void> startCharging() async {
-    userHint.value = 'Attempting to start...';
-    var started = await post(deviceUrl, {
-      'target': target.value,
+    session.userHint.value = 'Attempting to start...';
+    var started = await dio.post('http://10.0.2.2:9090/device', data: {
+      'target': session.target.value,
       'request': 'startCharge',
       'connectorId': 1,
       'idTag': 'RFIDSAN',
     });
-    lastSessionId.value = started['sessionId'];
-    userHint.value = 'Charging session: ${lastSessionId.value}';
-    status.value = 'Busy';
-    pollChargingProgress();
+    session.sessionId.value = started.data['sessionId'];
+    session.userHint.value = 'Charging session: ${session.sessionId.value}';
+    session.status.value = 'Busy';
   }
+}
 
+class ChargingPoller extends GetxController {
+  ChargerSession session = Get.find();
+  Dio dio;
+  ChargingPoller(this.dio) {
+    session.chargeStartIntent.onDone((p0) {
+      pollChargingProgress();
+    });
+  }
   void pollChargingProgress() async {
     try {
-      final response = await Dio().get(progressUrl, queryParameters: {
+      final response = await dio.get(progressUrl, queryParameters: {
         'numotype': 'numotry',
-        'sessionId': lastSessionId.value,
+        'sessionId': session.sessionId.value,
       });
       final progress = response.data;
-      print('Updating progress for ${lastSessionId.value}: $progress');
-      deliveredMin.value = progress['deliveredMin'].toInt();
-      deliveredWh.value = progress['deliveredWh'].toInt();
-      totalAmountToPay.value = progress['totalAmount'].toInt();
+      print('Updating progress for ${session.sessionId.value}: $progress');
+      session.deliveredMin.value = progress['deliveredMin'].toInt();
+      session.deliveredWh.value = progress['deliveredWh'].toInt();
+      session.totalAmountToPay.value = progress['totalAmount'].toInt();
     } catch (e) {
       print('GET error: $e');
     }
-    if (status.value == 'Busy') {
+    if (session.chargeStopIntent.isPending) {
       Future.delayed(const Duration(seconds: 3), pollChargingProgress);
     }
   }
+}
+
+class ChargeStopper extends GetxController {
+  ChargerSession session = Get.find();
+  Dio dio;
+  ChargeStopper(this.dio) {
+    session.chargeStopIntent.onFire((p0) async {
+      await stopCharging();
+      session.chargeStopIntent.done();
+    });
+  }
 
   Future<void> stopCharging() async {
-    userHint.value = 'Stopping the session...';
-    await post(deviceUrl, {
-      'target': target.value,
+    session.userHint.value = 'Stopping the session...';
+    await dio.post(deviceUrl, data: {
+      'target': session.target.value,
       'request': 'stopCharge',
-      'sessionId': lastSessionId.value,
+      'sessionId': session.sessionId.value,
     });
-    userHint.value = 'Stopped charging ${lastSessionId.value}';
-    status.value = 'Available';
+    session.userHint.value = 'Stopped charging ${session.sessionId.value}';
+    session.status.value = 'Available';
   }
 }

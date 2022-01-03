@@ -41,6 +41,7 @@ dev_dependencies:
   dart_code_metrics:
   pedantic:
   test_cov_console:
+  http_mock_adapter:
   flutter_test:
     sdk: flutter
 

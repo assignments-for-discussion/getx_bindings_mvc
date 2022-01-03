@@ -31,8 +31,8 @@ class ChargingViewSamples extends StatelessWidget {
   }
 
   void setupController(deliveredMin, deliveredWh, userHint) {
-    Get.delete<ChargeControl>();
-    final ChargeControl c = ChargeControl();
+    Get.delete<ChargerSession>();
+    final ChargerSession c = ChargerSession();
     c.deliveredMin.value = deliveredMin;
     c.deliveredWh.value = deliveredWh;
     c.userHint.value = userHint;
