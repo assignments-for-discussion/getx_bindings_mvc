@@ -62,9 +62,10 @@ class ChargingPoller extends GetxController {
       session.deliveredWh.value = progress['deliveredWh'].toInt();
       session.totalAmountToPay.value = progress['totalAmount'].toInt();
     } catch (e) {
+      // TODO: Either retry or alter the userHint
       print('GET error: $e');
     }
-    if (session.chargeStopIntent.isPending) {
+    if (session.chargeStopIntent.notYet) {
       Future.delayed(const Duration(seconds: 3), pollChargingProgress);
     }
   }

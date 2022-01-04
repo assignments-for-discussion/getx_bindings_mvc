@@ -25,6 +25,10 @@ class Intent {
     return status.value == IntentStatus.done;
   }
 
+  bool get notYet {
+    return status.value == IntentStatus.none;
+  }
+
   void onFire(void Function(IntentStatus) listener) {
     status.listen((s) {
       if (isPending) {

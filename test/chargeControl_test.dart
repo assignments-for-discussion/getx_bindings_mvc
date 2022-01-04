@@ -29,26 +29,45 @@ void main() {
       expect(session.sessionId.value, equals('yes:'));
     });
   });
-  test('when the intent to start charge is done, progress-polling starts', () {
-    final dio = Dio(BaseOptions());
-    final dioAdapter = DioAdapter(dio: dio);
-    session.sessionId.value = 'ongoing';
-    session.chargeStartIntent.reset();
-    dioAdapter.onGet('http://10.0.2.2:7902/api/transaction', (reqHandler) {
-      reqHandler.reply(200, {
-        'deliveredMin': 444,
-        'deliveredWh': 555,
-        'totalAmount': 666,
+  test(
+    'when the intent to start is done, progress is polled till stop',
+    () async {
+      final dio = Dio(BaseOptions());
+      final dioAdapter = DioAdapter(dio: dio);
+      session.sessionId.value = 'ongoing';
+      session.chargeStartIntent.reset();
+      session.chargeStopIntent.reset();
+      dioAdapter.onGet('http://10.0.2.2:7902/api/transaction', (reqHandler) {
+        reqHandler.reply(200, {
+          'deliveredMin': 114,
+          'deliveredWh': 115,
+          'totalAmount': 116,
+        });
       });
-    });
-    ChargingPoller(dio);
-    session.chargeStartIntent.done();
-    return Future.delayed(Duration(milliseconds: 30), () {
-      expect(session.deliveredMin.value, equals(444));
-      expect(session.deliveredWh.value, equals(555));
-      expect(session.totalAmountToPay.value, equals(666));
-    });
-  });
+      ChargingPoller(dio);
+      session.chargeStartIntent.done();
+      await Future.delayed(Duration(milliseconds: 30), () {
+        expect(session.deliveredMin.value, equals(114));
+        expect(session.deliveredWh.value, equals(115));
+        expect(session.totalAmountToPay.value, equals(116));
+      });
+      print('Setup for second call');
+      dioAdapter.onGet('http://10.0.2.2:7902/api/transaction', (reqHandler) {
+        reqHandler.reply(200, {
+          'deliveredMin': 224,
+          'deliveredWh': 225,
+          'totalAmount': 226,
+        });
+      });
+      await Future.delayed(Duration(seconds: 4), () {
+        print('Checking second call');
+        expect(session.deliveredMin.value, equals(224));
+        expect(session.deliveredWh.value, equals(225));
+        expect(session.totalAmountToPay.value, equals(226));
+      });
+      session.chargeStopIntent.done();
+    },
+  );
   test('intent to stop charging triggers request to device', () {
     final dio = Dio(BaseOptions());
     final dioAdapter = DioAdapter(dio: dio);
