@@ -2,8 +2,23 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:getx_bindings_mvc/chargeControl.dart';
 import 'package:getx_bindings_mvc/chargingScreen.dart';
+import 'package:getx_bindings_mvc/statusView.dart';
 
-void main() => runApp(GetMaterialApp(home: ChargingViewSamples()));
+void main() {
+  Get.put(ChargerSession());
+  runApp(GetMaterialApp(
+    navigatorKey: Get.key,
+    routes: {
+      '/': (_) => ChargingViewSamples(),
+      '/statusView': (_) {
+        print('going to status');
+        return StatusView();
+      },
+    },
+    navigatorObservers: [GetObserver()],
+    initialRoute: '/',
+  ));
+}
 
 class ChargingViewSamples extends StatelessWidget {
   @override
@@ -25,6 +40,13 @@ class ChargingViewSamples extends StatelessWidget {
         ElevatedButton(
           onPressed: longErrorMessage,
           child: const Text('Long error message'),
+        ),
+        const SizedBox(height: 10),
+        ElevatedButton(
+          onPressed: () {
+            Get.toNamed('/statusView');
+          },
+          child: const Text('Show Status'),
         ),
       ]),
     );

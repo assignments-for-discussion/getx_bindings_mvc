@@ -12,6 +12,7 @@ class ChargerSession extends GetxController {
   var target = '/numotry/7RUFAT/cpsud001'.obs;
   var chargeStartIntent = Intent();
   var chargeStopIntent = Intent();
+  var statusViewIntent = Intent();
   var userHint = ''.obs;
 }
 
@@ -28,17 +29,25 @@ class ChargeStarter extends GetxController {
       session.chargeStartIntent.done();
     });
   }
-  Future<void> startCharging() async {
+  Future<bool> startCharging() async {
     session.userHint.value = 'Attempting to start...';
-    var started = await dio.post('http://10.0.2.2:9090/device', data: {
-      'target': session.target.value,
-      'request': 'startCharge',
-      'connectorId': 1,
-      'idTag': 'RFIDSAN',
-    });
-    session.sessionId.value = started.data['sessionId'];
-    session.userHint.value = 'Charging session: ${session.sessionId.value}';
-    session.status.value = 'Busy';
+    print('attempting to start...');
+    try {
+      var started = await dio.post('http://10.0.2.2:9090/device', data: {
+        'target': session.target.value,
+        'request': 'startCharge',
+        'connectorId': 1,
+        'idTag': 'RFIDSAN',
+      });
+      session.sessionId.value = started.data['sessionId'];
+      session.userHint.value = 'Charging session: ${session.sessionId.value}';
+      session.status.value = 'Busy';
+      return true;
+    } catch (e) {
+      print('Starting error: $e');
+      session.userHint.value = 'Starting error: Charger may be disconnected';
+      return false;
+    }
   }
 }
 
@@ -62,8 +71,7 @@ class ChargingPoller extends GetxController {
       session.deliveredWh.value = progress['deliveredWh'].toInt();
       session.totalAmountToPay.value = progress['totalAmount'].toInt();
     } catch (e) {
-      // TODO: Either retry or alter the userHint
-      print('GET error: $e');
+      session.userHint.value = 'No progress yet...';
     }
     if (session.chargeStopIntent.notYet) {
       Future.delayed(const Duration(seconds: 3), pollChargingProgress);

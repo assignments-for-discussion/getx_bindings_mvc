@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:getx_bindings_mvc/chargeControl.dart';
 import 'package:getx_bindings_mvc/chargeProgressView.dart';
-import 'package:getx_bindings_mvc/statusView.dart';
 
 class ChargingScreen extends StatelessWidget {
   @override
@@ -23,7 +22,7 @@ class ChargingScreen extends StatelessWidget {
         const SizedBox(height: 10),
         ElevatedButton(
           child: const Text('Status'),
-          onPressed: () => Get.to(() => StatusView()),
+          onPressed: () => Get.toNamed('/status-screen'),
         ),
         const SizedBox(height: 10),
         ChargeProgressView(),
