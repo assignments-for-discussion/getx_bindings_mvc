@@ -66,7 +66,7 @@ class ChargingPoller extends GetxController {
         'sessionId': session.sessionId.value,
       });
       final progress = response.data;
-      print('Updating progress for ${session.sessionId.value}: $progress');
+      session.userHint.value = 'Progress on ${session.sessionId.value}';
       session.deliveredMin.value = progress['deliveredMin'].toInt();
       session.deliveredWh.value = progress['deliveredWh'].toInt();
       session.totalAmountToPay.value = progress['totalAmount'].toInt();

@@ -1,5 +1,4 @@
-import 'package:getx_bindings_mvc/home.dart';
+import 'package:getx_bindings_mvc/navigator.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 
-void main() => runApp(GetMaterialApp(home: Home()));
+void main() => runApp(theNavigator());

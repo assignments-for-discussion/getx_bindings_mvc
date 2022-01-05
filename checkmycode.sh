@@ -15,7 +15,7 @@ fi
 
 flutter pub run test_cov_console -c
 if grep -v main.dart coverage/test_cov_console.csv | grep -q "no unit test"; then
-  echo -e "${RED}Some files aren't covered${NC}"
+  echo -e "${RED}Some files aren't covered${NC}: Cover everything except main.dart"
   exit 1
 fi
 
