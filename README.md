@@ -1,6 +1,6 @@
 # GetX based decoupling
 
-A Flutter project to build a decoupled set of screens using GetX.
+A Flutter project to build a decoupled set of screens using [GetX](https://pub.dev/packages/get).
 
 ## Getting Started
 
